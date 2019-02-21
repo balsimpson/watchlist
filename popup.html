@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Watchlist</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- <link rel="stylesheet" type="text/css" media="screen" href="main.css" /> -->
+  <link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">
+
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      color: white;
+      font-family: 'Oswald', sans-serif;
+    }
+
+    .popup {
+      width: 300px;
+      height: 400px;
+      /* margin: 20px; */
+      /* padding: 2em; */
+      background: radial-gradient(566.17px at 46.67% 14%, #1D1D1D 0%, #1B1B1B 100%);
+    }
+
+    .pop-header {
+      display: grid;
+      grid-template-columns: 3fr 1fr;
+      padding: 1em;
+      /* background-color: #1D1D1D; */
+      height: 50px;
+    }
+
+    .name {
+      padding: .2em .8em;
+      font-size: 2em;
+      font-weight: 200;
+    }
+
+    .status {
+      text-align: left;
+      padding: 1em;
+    }
+
+    .pop-tags {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, 50px);
+      font-size: .7em;
+      align-items: center;
+      justify-content: center;
+      /* padding: .2em; */
+      background: #332323;
+      /* max-width: 90%; */
+      overflow: scroll;
+    }
+
+    .pop-tags::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tag {
+      text-align: center;
+      background: #B08E25;
+      color: #333333;
+      /* padding: .4em 1em; */
+      border-radius: 20px;
+      margin: 5px;
+      cursor: pointer;
+    }
+
+    .tag:hover {
+      background: #333333;
+      color: #B08E25;
+    }
+
+    .tag:active {
+      background: #333333;
+      color: #B08E25;
+    }
+
+    .pop-list {
+      max-height: 290px;
+      overflow: scroll;
+      background-color: #1D1D1D;
+    }
+
+    .pop-list::-webkit-scrollbar {
+      display: none;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 30px;
+      height: 14px;
+
+    }
+
+    .status-txt {
+      color: #B08E25;
+      font-size: .6em;
+      padding: 2px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgb(153, 153, 153);
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 0px;
+      bottom: -1px;
+      background-color: #B08E25;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    input:checked+.slider {
+      background-color: rgb(235, 215, 156);
+    }
+
+    input:focus+.slider {
+      box-shadow: 0 0 1px #B08E25;
+    }
+
+    input:checked+.slider:before {
+      -webkit-transform: translateX(16px);
+      -ms-transform: translateX(16px);
+      transform: translateX(16px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+      border-radius: 34px;
+    }
+
+    .slider.round:before {
+      border-radius: 50%;
+    }
+
+    /* ITEM */
+    .show {
+      color: yellow;
+    }
+
+    .item {
+      display: grid;
+      grid-template-columns: 60px 200px;
+      padding: 1em;
+      transition: 300ms;
+      height: 60px;
+      position: relative;
+      /* background: radial-gradient(566.17px at 46.67% 14%, #1D1D1D 0%, #1B1B1B 100%); */
+    }
+
+    .close {
+      display: none;
+      position: absolute;
+      border: 0;
+      width: 20px;
+      height: 20px;
+      right: 10px;
+      top: 10px;
+      /* background-color: #332323; */
+      /* color: beige; */
+      cursor: pointer;
+    }
+
+    .close:hover {
+      background-color: #B08E25;
+    }
+
+    .item:hover {
+      background-color: #333333;
+      /* transform: scaleY(1.2); */
+      height: 100px;
+    }
+
+    .item:hover .close {
+
+      display: block;
+    }
+
+    .item-title {
+      text-transform: uppercase;
+      font-size: 1.2em;
+    }
+
+    .item-genres {
+      font-size: .7em;
+      font-weight: 100;
+    }
+
+    .poster {
+      width: 40px;
+      height: 60px;
+      background-color: black;
+    }
+
+    img {
+      object-fit: cover;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+  <!-- <div id="player"></div>
+  <div id="hello">1234</div> -->
+  <div class="popup">
+    <div class="pop-header">
+      <div class="name">
+        WATCHLIST
+      </div>
+      <div class="status">
+        <label class="switch">
+          <input id="enabled" type="checkbox" checked>
+          <span class="slider round"></span>
+        </label>
+        <div id="status-txt" class="status-txt">
+          ENABLED
+        </div>
+      </div>
+    </div>
+    <div class="pop-tags"></div>
+    <div class="pop-list">
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+
+</html>
