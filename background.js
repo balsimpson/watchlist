@@ -1,7 +1,36 @@
-console.log('content-script');
-let now_showing = {};
+console.log('background.js');
+chrome.browserAction.onClicked.addListener(e => {
+	console.log('button clicked');
+});
 
-let list = [];
+chrome.contextMenus.onClicked.addListener(onClickHandler);
+
+function onClickHandler(info, tab) {
+	console.log('info', info);
+	console.log('tab', tab);
+	if (info.selectionText) {
+		getDetails(info.selectionText);
+	}
+}
+
+chrome.runtime.onInstalled.addListener(function () {
+	// Create one test item for each context type.
+	// var contexts = ["selection", "link"];
+	// for (var i = 0; i < contexts.length; i++) {
+	// 	var context = contexts[i];
+	// 	var title = "Add to Watchlist";
+	// 	var id = chrome.contextMenus.create({
+	// 		"title": title, "contexts": [context],
+	// 		"id": "context" + context
+	// 	});
+	// 	console.log("'" + context + "' item:" + id);
+	// }var title = "Add to Watchlist";
+	var id = chrome.contextMenus.create({
+		"title": 'Add to Watchlist', "contexts": ['all'],
+		"id": "context"
+	});
+	console.log("'" + 'context' + "' item:" + id);
+});
 
 const xhttpCall = (method, url, data) => {
 	return new Promise((resolve) => {
@@ -30,11 +59,11 @@ chrome.storage.local.get(['data'], (result) => {
 	if (result.data) {
 		console.log('result', result.data);
 		list = result.data.list || [];
-		listenForSelection();
+		// listenForSelection();
 	} else {
 		chrome.storage.local.set({ data: { status: true } }, (result) => {
 			console.log('no result', result);
-			listenForSelection();
+			// listenForSelection();
 		})
 	}
 });
@@ -272,18 +301,18 @@ function showInfo(result) {
 	<span class="close-btn" aria-label="Close">×</span>
 	`
 
-	let elementWhereSelectionStart = window.getSelection().anchorNode;
-	let closestBlockElement = elementWhereSelectionStart.parentNode;
+	// let elementWhereSelectionStart = window.getSelection().anchorNode;
+	// let closestBlockElement = elementWhereSelectionStart.parentNode;
 	// closestBlockElement.appendChild(popupDiv);
 	document.body.appendChild(popupDiv);
 	// Add non disturbing border to selected elements
 	// For simplicity I've adding outline only for the start element
 	// closestBlockElement.style.outline = '1px solid blue'
 
-	const timeout = setTimeout(() => {
-		document.body.removeChild(popupDiv);
-		now_showing = {};
-	}, 5000);
+	// const timeout = setTimeout(() => {
+	// 	document.body.removeChild(popupDiv);
+	// 	now_showing = {};
+	// }, 5000);
 
 	// Add Event Listener
 	let addButton = document.querySelector('.add-btn');
@@ -323,12 +352,12 @@ function showInfo(result) {
 
 // get data from OMDb
 // http://www.omdbapi.com/?apikey=ba58d588&t=maisel
-const getDetails = (e) => {
+const getDetails = (selectedText) => {
 
-	let selectedText = window.getSelection();
+	// let selectedText = window.getSelection();
 	console.log('selectedText', selectedText);
 
-	if (selectedText.type == 'Range') {
+	// if (selectedText.type == 'Range') {
 		let url = `https://www.omdbapi.com/?apikey=ba58d588&t=${selectedText}`;
 
 		let details = xhttpCall('GET', url);
@@ -338,20 +367,14 @@ const getDetails = (e) => {
 			console.log('showing', now_showing);
 			showInfo(result);
 		});
-	}
+	// }
 }
 
-const handleEvent = (event) => {
-	// removeHandler();
-	if (now_showing.Title) {
-		console.log('now showing', now_showing);
-	} else {
-		getDetails(event);
-	}
-}
-
-
-
-function listenForSelection() {
-	// document.addEventListener('mouseup', handleEvent, false);
-}
+// const handleEvent = (event) => {
+// 	// removeHandler();
+// 	if (now_showing.Title) {
+// 		console.log('now showing', now_showing);
+// 	} else {
+// 		getDetails(event);
+// 	}
+// }

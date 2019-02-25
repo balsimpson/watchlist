@@ -45,16 +45,24 @@ const getGenres = (genre_array) => {
 
 const deleteItem = async (id) => {
   document.getElementById(id).remove();
-  let url = `https://watchlist-9ebe.restdb.io/rest/saved/${id}`;
-  let resp = await xhttpCall('DELETE', url);
+
   genres = [];
   lookup = {};
-  console.log('deleted - ', resp.result[0]);
+  console.log('list - ', list);
   for (let i = list.length; i-- > 0;) {
-    let _id = list[i]._id;
-    if (_id === id) {
-      console.log('deleted - ', _id);
+    let imdbID = list[i].imdbID;
+    if (imdbID === id) {
+      console.log('deleted - ', imdbID);
       list.splice(i, 1);
+      chrome.storage.local.set(
+        {
+          data: {
+            status: true,
+            list: list
+          }
+        }, (result) => {
+          console.log('deleted - ', result);
+        });
     } else {
       let _arr = list[i].Genre.split(',');
       getGenres(_arr);
@@ -65,33 +73,52 @@ const deleteItem = async (id) => {
 
 const renderItem = (data) => {
 
-  // console.log('data', data.Genre)
+  console.log('data', data)
   let itemContainer = document.querySelector('.pop-list');
 
   let itemDiv = document.createElement('div');
-  itemDiv.className = 'item';
-  itemDiv.id = data._id;
+  itemDiv.className = 'item agent-1';
+  itemDiv.id = data.imdbID;
 
   itemDiv.innerHTML = `
       <div class="poster">
-          <img src=${data.Poster} alt="">
+          <img src=${data.Poster} alt="poster">
       </div>
-      <div class="item-title">
-          ${data.Title}
-          <div class="item-genres">
-              ${data.Genre}
+          <div>
+            <div class="item-title color-primary-1">
+            <a href="https://imdb.com/title/${data.imdbID}">${data.Title} </a>
+            <span class="item-year">${data.Year}</span>
+            </div>
+            <div class="item-genres">
+                ${data.Genre}
+                <span class="item-duration">
+                  <i class="fa fa-clock-o" aria-hidden="true"></i> ${data.Runtime}
+                </span>
+            </div>
+            <div class="item-plot">
+                ${data.Plot}
+            </div>
           </div>
-      </div>
-      <button id=${data._id} class="close" aria-label="Close">×</button>
+      <button id=${data.imdbID} class="close" aria-label="Close">×</button>
       `
   itemContainer.appendChild(itemDiv);
 
   // Delete Item
   itemDiv.addEventListener('click', e => {
-    // console.log(e.target.id, 'deleted');
-    deleteItem(e.target.id);
+    if (e.target.className === 'close') {
+      console.log('delete clicked');
+      deleteItem(e.target.id);
+    }
   })
 }
+
+// Open links in a tab
+window.addEventListener('click', function (e) {
+  if (e.target.href !== undefined) {
+    console.log('link clicked');
+    chrome.tabs.create({ url: e.target.href })
+  }
+})
 
 // Check Status
 let statusInput = document.getElementById('enabled');
@@ -116,13 +143,15 @@ statusInput.addEventListener('change', event => {
     status_text.style.color = 'gray';
   }
 
-  chrome.storage.sync.set({ data: { status: statusInput.checked } }, (result) => {
+  chrome.storage.local.set({ data: { status: statusInput.checked, list: list } }, (result) => {
     console.log('Status: ' + statusInput.checked);
   });
 });
 
 const makeTags = (tags) => {
   let tagContainer = document.querySelector('.pop-tags');
+  tagContainer.innerHTML = '';
+
   tags.forEach(tag => {
     let tagDiv = document.createElement('div');
     tagDiv.className = "tag";
@@ -147,19 +176,35 @@ const makeTags = (tags) => {
   });
 }
 
+const getDB = async () => {
+  chrome.storage.local.get(['data'], (result) => {
+    console.log('GOT DATA', result.data);
+    return result.data;
+  })
+}
+
 const getWatchlist = async () => {
 
-  let url = "https://watchlist-9ebe.restdb.io/rest/saved";
-  list = await xhttpCall('GET', url, null);
-  // console.log('list', list);
+  chrome.storage.local.get(['data'], (result) => {
+    // console.log('GOT DATA', result.data);
+    list = result.data.list;
+    console.log('list', list);
 
-  list.forEach(item => {
-    // console.log('item', item);
-    let _arr = item.Genre.split(',');
-    getGenres(_arr);
-    renderItem(item);
-  })
-  makeTags(genres);
+    if (list.length > 0) {
+      // Hide loading
+      document.querySelector('.sk-cube-grid').classList.add('hide');
+      document.querySelector('.help-text').classList.add('hide');
+      // console.log('list', list);
+
+      list.forEach(item => {
+        // console.log('item', item);
+        let _arr = item.Genre.split(',');
+        getGenres(_arr);
+        renderItem(item);
+      })
+      makeTags(genres);
+    }
+  });
 }
 
 chrome.storage.local.get(['data'], (result) => {
@@ -174,9 +219,9 @@ chrome.storage.local.get(['data'], (result) => {
     status = true;
     statusBtn.checked = status;
     //  Save Status
-    chrome.storage.local.set({ data: {status: true} }, (result) => {
-			console.log('no result', result);
-		});
+    chrome.storage.local.set({ data: { status: true } }, (result) => {
+      console.log('no result', result);
+    });
   }
 });
 

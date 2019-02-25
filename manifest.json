@@ -6,8 +6,10 @@
 	"permissions": [
 		"storage",
 		"tabs",
-		"https://*/"
+		"https://*/",
+		"contextMenus"
 	],
+	"content_security_policy": "script-src 'self' https://use.fontawesome.com https://fontawesome.com; object-src 'self'",
 	"icons": {
 		"16": "watchlist_16.png",
 		"48": "watchlist_48.png",
@@ -19,8 +21,18 @@
 	},
 	"content_scripts": [
 		{
-			"matches": ["<all_urls>"],
-			"js": ["content.js"]
+			"matches": [
+				"<all_urls>"
+			],
+			"js": [
+				"content.js"
+			]
 		}
-	]
+	],
+	"background": {
+		"persistent": false,
+		"scripts": [
+			"background.js"
+		]
+	}
 }
