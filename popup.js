@@ -121,32 +121,32 @@ window.addEventListener('click', function (e) {
 })
 
 // Check Status
-let statusInput = document.getElementById('enabled');
-statusInput.addEventListener('change', event => {
-  console.log(event);
-  // UPDATE STATUS
-  status = statusInput.checked;
+// let statusInput = document.getElementById('enabled');
+// statusInput.addEventListener('change', event => {
+//   console.log(event);
+//   // UPDATE STATUS
+//   status = statusInput.checked;
 
-  let status_text = document.getElementById("status-txt");
+//   let status_text = document.getElementById("status-txt");
 
-  if (statusInput.checked) {
-    document.addEventListener("mouseup", e => {
-      console.log('removed');
-    });
-    status_text.textContent = 'ENABLED';
-    status_text.style.color = '#B08E25';
-  } else {
-    document.removeEventListener("mouseup", e => {
-      console.log('removed');
-    });
-    status_text.textContent = 'DISABLED';
-    status_text.style.color = 'gray';
-  }
+//   if (statusInput.checked) {
+//     document.addEventListener("mouseup", e => {
+//       console.log('removed');
+//     });
+//     status_text.textContent = 'ENABLED';
+//     status_text.style.color = '#B08E25';
+//   } else {
+//     document.removeEventListener("mouseup", e => {
+//       console.log('removed');
+//     });
+//     status_text.textContent = 'DISABLED';
+//     status_text.style.color = 'gray';
+//   }
 
-  chrome.storage.local.set({ data: { status: statusInput.checked, list: list } }, (result) => {
-    console.log('Status: ' + statusInput.checked);
-  });
-});
+//   chrome.storage.local.set({ data: { status: statusInput.checked, list: list } }, (result) => {
+//     console.log('Status: ' + statusInput.checked);
+//   });
+// });
 
 const makeTags = (tags) => {
   let tagContainer = document.querySelector('.pop-tags');
@@ -207,22 +207,22 @@ const getWatchlist = async () => {
   });
 }
 
-chrome.storage.local.get(['data'], (result) => {
-  console.log('status', result.data);
-  let statusBtn = document.getElementById('enabled');
+// chrome.storage.local.get(['data'], (result) => {
+//   console.log('status', result.data);
+//   // let statusBtn = document.getElementById('enabled');
 
-  if (result && result.data) {
-    status = result.data.status;
-    statusBtn.checked = status;
-    console.log('status true', result.data.status);
-  } else {
-    status = true;
-    statusBtn.checked = status;
-    //  Save Status
-    chrome.storage.local.set({ data: { status: true } }, (result) => {
-      console.log('no result', result);
-    });
-  }
-});
+//   if (result && result.data) {
+//     // status = result.data.status;
+//     // statusBtn.checked = status;
+//     console.log('status true', result.data.status);
+//   } else {
+//     status = true;
+//     statusBtn.checked = status;
+//     //  Save Status
+//     chrome.storage.local.set({ data: { status: true } }, (result) => {
+//       console.log('no result', result);
+//     });
+//   }
+// });
 
 getWatchlist();

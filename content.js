@@ -3,6 +3,22 @@ let now_showing = {};
 
 let list = [];
 
+// Listen to messages from background.js
+chrome.runtime.onMessage.addListener(gotMessage);
+
+function gotMessage(request, sender, sendResponse) {
+	console.log('messages received', request, sender);
+	getDetails(request.text);
+}
+
+chrome.runtime.onConnect.addListener(port => {
+	console.log('connected ', port);
+
+	if (port.name === 'hi') {
+		port.onMessage.addListener(this.processMessage);
+	}
+});
+
 const xhttpCall = (method, url, data) => {
 	return new Promise((resolve) => {
 		const xhr = new XMLHttpRequest();
@@ -10,7 +26,7 @@ const xhttpCall = (method, url, data) => {
 
 		xhr.addEventListener("readystatechange", function () {
 			if (this.readyState === 4) {
-				console.log(this.responseText);
+				// console.log(this.responseText);
 				return resolve(JSON.parse(this.responseText));
 			}
 		});
@@ -148,7 +164,7 @@ const addCSS = () => {
   
 	.item-year {
 		color: var(--lighter-gray);
-	f	ont-family: 'Oswald', sans-serif;
+	    font-family: 'Oswald', sans-serif;
 	}
 
 	.item-genres {
@@ -214,7 +230,7 @@ const addCSS = () => {
 		color: yellow;
 	}
 
-	info a, a:visited, a:link {
+	info a, info a:visited, info a:link {
 		text-decoration: none;
 		color: var(--primary-0);
 	}
@@ -228,16 +244,6 @@ const addCSS = () => {
 	linkElement.setAttribute('href', 'data:text/css;charset=UTF-8,' + encodeURIComponent(myStringOfstyles));
 	head.appendChild(linkElement);
 }
-
-// var newStyle = document.createElement('style');
-// newStyle.appendChild(document.createTextNode("\
-// @font-face {\
-//     font-family: " + yourFontName + ";\
-//     src: url('" + yourFontURL + "') format('yourFontFormat');\
-// }\
-// "));
-
-// document.head.appendChild(newStyle);
 
 function showInfo(result) {
 
@@ -315,30 +321,21 @@ function showInfo(result) {
 	});
 }
 
-// function removeHandler() {
-// 	document.removeEventListener("mouseup", e => {
-// 		console.log('removed');
-// 	});
-// }
+const getDetails = (selectedText) => {
 
-// get data from OMDb
-// http://www.omdbapi.com/?apikey=ba58d588&t=maisel
-const getDetails = (e) => {
-
-	let selectedText = window.getSelection();
 	console.log('selectedText', selectedText);
 
-	if (selectedText.type == 'Range') {
-		let url = `https://www.omdbapi.com/?apikey=ba58d588&t=${selectedText}`;
+	// if (selectedText.type == 'Range') {
+		let url = `https://www.omdbapi.com/?apikey=ba58d588&s=${selectedText}`;
 
 		let details = xhttpCall('GET', url);
 
-		details.then(result => {
-			now_showing = result;
-			console.log('showing', now_showing);
-			showInfo(result);
+		details.then(results => {
+			now_showing = results.Search[0];
+			console.log('showing', results);
+			showInfo(now_showing);
 		});
-	}
+	// }
 }
 
 const handleEvent = (event) => {

@@ -45,8 +45,9 @@
     }
 
     .pop-header {
-      display: grid;
-      grid-template-columns: 3fr 1fr;
+      /* display: grid; */
+      /* grid-template-columns: 3fr 1fr; */
+      text-align: center;
       padding: 1em;
       /* background-color: #1D1D1D; */
       height: 50px;
@@ -107,7 +108,7 @@
     }
 
     .pop-list {
-      max-height: 290px;
+      max-height: 300px;
       overflow: scroll;
       background-color: var(--darker-gray);
     }
@@ -240,6 +241,15 @@
 
     .item-title {
       text-transform: uppercase;
+      font-size: 1.2em;
+      cursor: pointer;
+      color: var(--primary-3);
+      font-family: 'Oswald', sans-serif;
+    }
+    
+    .item-title a {
+      text-transform: uppercase;
+      text-decoration: none;
       font-size: 1.2em;
       cursor: pointer;
       color: var(--primary-3);
@@ -441,7 +451,7 @@
       <div class="name">
         WATCH<span class="last-name">LIST</span>
       </div>
-      <div class="status">
+      <!-- <div class="status">
         <label class="switch">
           <input id="enabled" type="checkbox" checked>
           <span class="slider round"></span>
@@ -449,7 +459,7 @@
         <div id="status-txt" class="status-txt">
           ENABLED
         </div>
-      </div>
+      </div> -->
     </div>
     <div class="sk-cube-grid">
       <div class="sk-cube sk-cube1"></div>

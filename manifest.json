@@ -2,14 +2,14 @@
 	"manifest_version": 2,
 	"name": "Watchlist",
 	"description": "Save Movies to your Watchlist",
-	"version": "1.0",
+	"version": "1.5",
 	"permissions": [
 		"storage",
 		"tabs",
 		"https://*/",
-		"contextMenus"
+		"contextMenus",
+		"identity"
 	],
-	"content_security_policy": "script-src 'self' https://use.fontawesome.com https://fontawesome.com; object-src 'self'",
 	"icons": {
 		"16": "watchlist_16.png",
 		"48": "watchlist_48.png",
@@ -30,9 +30,20 @@
 		}
 	],
 	"background": {
-		"persistent": false,
+		"persistent": true,
 		"scripts": [
-			"background.js"
+			"background.js",
+			"firebase-app.js",
+			"firebase-firestore.js"
 		]
-	}
+	},
+	"content_security_policy": "script-src 'self' https://use.fontawesome.com https://fontawesome.com https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com; object-src 'self'",
+	"oauth2": {
+	  "client_id": "287335213989-skkpfn83eodsue8klk161d2hlr8h06le.apps.googleusercontent.com",
+	  "scopes": [
+		"https://www.googleapis.com/auth/userinfo.email",
+		"https://www.googleapis.com/auth/userinfo.profile"
+	  ]
+	},
+	"key": "-----BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArm8ZedOgj/XKX5Q21H3Pysjot0Nle8f9HKdAHYdjIBh8HuwGZZ8PvH7uBhAtVKcs80Jd59n8BqDvLgKWTEj0w3zczBlXqcLAclE1G5oTm5qUu9lHpDiSGHog6YmlQybEh939nAhN3svBmTi1xkuLrFhWGgPH//pZwXB9lCe3Wzn7mtrrdsTKOiA9inqQ1jl2ttKMFrSeU7NPR3VSo4Qw23uUgrmkul0ItkGtsnF6cJCbMFLvVKdTQh3M1FF4Zg4o2wNFCtvDnDZfL9GRB8xAPN4p7kJat2wp3AoBbgxRwVSsfAAAALznW2obTgaSa/se5gKJyQZsyxJGQfk8RTZwIDAQAB-----END PUBLIC KEY-----"
 }
